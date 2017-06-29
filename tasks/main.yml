@@ -1,0 +1,37 @@
+---
+# tasks file for ansible-role-cvsync
+
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "install-{{ ansible_os_family }}.yml"
+
+- name: Create log directory
+  file:
+    path: "{{ cvsync_log_dir }}"
+    mode: 0755
+    owner: "{{ cvsync_user }}"
+    group: "{{ cvsync_group }}"
+    state: directory
+  notify: Restart cvsync
+
+- name: Create db directory
+  file:
+    path: "{{ cvsync_db_dir }}"
+    mode: 0755
+    owner: "{{ cvsync_user }}"
+    group: "{{ cvsync_group }}"
+    state: directory
+  notify: Restart cvsync
+
+- name: Create cvsync.conf
+  template:
+    src: cvsync.conf.j2
+    dest: "{{ cvsync_conf_file }}"
+    validate: echo %s
+  notify: Restart cvsync
+
+- name: Start cvsync
+  service:
+    name: "{{ cvsync_service }}"
+    enabled: true
+    state: started

@@ -1,0 +1,5 @@
+- hosts: localhost
+  roles:
+    - ansible-role-cvsync
+  vars:
+    cvsync_config: ""

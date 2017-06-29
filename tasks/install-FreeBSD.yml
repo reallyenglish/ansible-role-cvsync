@@ -1,0 +1,6 @@
+---
+
+- name: Install cvsync
+  pkgng:
+    name: cvsync
+    state: present

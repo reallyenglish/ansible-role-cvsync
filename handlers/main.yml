@@ -1,0 +1,6 @@
+---
+
+- name: Restart cvsync
+  service:
+    name: cvsync
+    state: restarted

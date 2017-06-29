@@ -1,0 +1,8 @@
+cvsync_user: cvsync
+cvsync_group: cvsync
+cvsync_log_dir: /var/log/cvsync
+cvsync_db_dir: "{{ __cvsync_db_dir }}"
+cvsync_service: cvsync
+cvsync_conf_dir: "{{ __cvsync_conf_dir }}"
+cvsync_conf_file: "{{ __cvsync_conf_dir }}/cvsync.conf"
+cvsync_flags: ""
