@@ -2,4 +2,8 @@
   roles:
     - ansible-role-cvsync
   vars:
-    cvsync_config: ""
+    cvsync_config:
+      - hostname: cvsync.allbsd.org
+        base-prefix: /home/vagrant/cvs
+        collection:
+          - name tendra-www release rcs

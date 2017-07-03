@@ -1,0 +1,20 @@
+# Managed by ansible
+
+{% for config in cvsync_config %}
+config {
+{% for k, v in config | dictsort() %}
+{% if k != 'collection' %}
+{% if v | length > 0 %}
+  {{ k }} {{ v }}
+{% else %}
+  {{ k }}
+{% endif %}
+{% endif %}
+{% endfor %}
+  collection {
+{% for i in config.collection %}
+    {{ i }}
+{% endfor %}
+  }
+}
+{% endfor %}

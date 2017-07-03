@@ -2,57 +2,52 @@ require "spec_helper"
 require "serverspec"
 
 package = "cvsync"
-service = "cvsync"
-config  = "/etc/cvsync/cvsync.conf"
-user    = "cvsync"
-group   = "cvsync"
-ports   = [PORTS]
-log_dir = "/var/log/cvsync"
-db_dir  = "/var/lib/cvsync"
-
-case os[:family]
-when "freebsd"
-  config = "/usr/local/etc/cvsync.conf"
-  db_dir = "/var/db/cvsync"
-end
+config  = "/etc/cvsync.conf"
+user    = "_cvsyncd"
+group   = "_cvsyncd"
+base_prefix = "/home/vagrant/cvs"
+hostname = "cvsync.allbsd.org"
+default_user = "root"
+default_group = "wheel"
 
 describe package(package) do
   it { should be_installed }
 end
 
 describe file(config) do
+  it { should exist }
   it { should be_file }
-  its(:content) { should match Regexp.escape("cvsync") }
+  it { should be_mode 644 }
+  it { should be_owned_by default_user }
+  it { should be_grouped_into default_group }
+  its(:content) { should match(/^\s+base-prefix #{Regexp.escape(base_prefix)}$/) }
+  its(:content) { should match(/^\s+hostname #{Regexp.escape(hostname)}$/) }
+  its(:content) { should match(/^\s+collection {\n\s+name tendra-www release rcs$/) }
 end
 
-describe file(log_dir) do
+describe file(base_prefix) do
   it { should exist }
+  it { should be_directory }
   it { should be_mode 755 }
   it { should be_owned_by user }
   it { should be_grouped_into group }
 end
 
-describe file(db_dir) do
+describe command("su -l -s /bin/sh #{user}  -c '/usr/local/bin/cvsync -c #{config}'") do
+  its(:exit_status) { should eq 0 }
+  its(:stderr) { should eq "" }
+end
+describe file("#{base_prefix}/www") do
   it { should exist }
+  it { should be_directory }
   it { should be_mode 755 }
   it { should be_owned_by user }
   it { should be_grouped_into group }
 end
-
-case os[:family]
-when "freebsd"
-  describe file("/etc/rc.conf.d/cvsync") do
-    it { should be_file }
-  end
-end
-
-describe service(service) do
-  it { should be_running }
-  it { should be_enabled }
-end
-
-ports.each do |p|
-  describe port(p) do
-    it { should be_listening }
-  end
+describe file("#{base_prefix}/www/en/Makefile,v") do
+  it { should exist }
+  it { should be_file }
+  it { should be_mode 444 }
+  it { should be_owned_by user }
+  it { should be_grouped_into group }
 end

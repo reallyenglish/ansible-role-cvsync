@@ -1,6 +1,6 @@
 ---
 
 - name: Install cvsync
-  pkgng:
+  openbsd_pkg:
     name: cvsync
     state: present

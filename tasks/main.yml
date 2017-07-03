@@ -5,33 +5,17 @@
 
 - include: "install-{{ ansible_os_family }}.yml"
 
-- name: Create log directory
-  file:
-    path: "{{ cvsync_log_dir }}"
-    mode: 0755
-    owner: "{{ cvsync_user }}"
-    group: "{{ cvsync_group }}"
-    state: directory
-  notify: Restart cvsync
-
-- name: Create db directory
-  file:
-    path: "{{ cvsync_db_dir }}"
-    mode: 0755
-    owner: "{{ cvsync_user }}"
-    group: "{{ cvsync_group }}"
-    state: directory
-  notify: Restart cvsync
-
 - name: Create cvsync.conf
   template:
     src: cvsync.conf.j2
     dest: "{{ cvsync_conf_file }}"
-    validate: echo %s
-  notify: Restart cvsync
+    backup: yes
+    # validate: echo %s
 
-- name: Start cvsync
-  service:
-    name: "{{ cvsync_service }}"
-    enabled: true
-    state: started
+- name: Create cvsync_prefix
+  file:
+    path: "{{ item['base-prefix'] }}"
+    state: directory
+    owner: "{{ cvsync_user }}"
+    group: "{{ cvsync_group }}"
+  with_items: "{{ cvsync_config }}"

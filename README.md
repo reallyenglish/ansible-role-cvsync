@@ -1,6 +1,6 @@
 # ansible-role-cvsync
 
-A brief description of the role goes here.
+Configures `cvsync(1)` to mirror remote `CVS` repository.
 
 # Requirements
 
@@ -8,9 +8,31 @@ None
 
 # Role Variables
 
-| variable | description | default |
+| Variable | Description | Default |
 |----------|-------------|---------|
+| `cvsync_user` | owner of `base-prefix` directory | `{{ __cvsync_user }}` |
+| `cvsync_group` | group of `base-prefix` directory | `{{ __cvsync_group }}` |
+| `cvsync_conf_dir` | path to directory where `cvsync.conf` is kept | `{{ __cvsync_conf_dir }}` |
+| `cvsync_conf_file` | path to `cvsync.conf` | `{{ cvsync_conf_dir }}/cvsync.conf` |
+| `cvsync_config` | list of configurations (see below) | `[]` |
 
+## `cvsync_config`
+
+This variable is a list of configurations. Each element is a dict whose keys and values are explained below.
+
+| Key | Value | Mandatory? |
+|-----|-------|------------|
+| `base-prefix` | path to the base directory of the collection | yes |
+| `collection` | list of configuration string of each collection | yes |
+| any other options described in `cvsync(1)` | value of the option, or empty string | no |
+
+## OpenBSD
+
+| Variable | Default |
+|----------|---------|
+| `__cvsync_user` | `_cvsyncd` |
+| `__cvsync_group` | `_cvsyncd` |
+| `__cvsync_conf_dir` | `/etc` |
 
 # Dependencies
 
@@ -19,6 +41,15 @@ None
 # Example Playbook
 
 ```yaml
+- hosts: localhost
+  roles:
+    - ansible-role-cvsync
+  vars:
+    cvsync_config:
+      - hostname: cvsync.allbsd.org
+        base-prefix: /home/vagrant/cvs
+        collection:
+          - name tendra-www release rcs
 ```
 
 # License
